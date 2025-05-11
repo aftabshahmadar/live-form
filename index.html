@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Form to Google Sheet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 40px;
+      padding: 20px;
       background: #f5f5f5;
+      margin: 0;
     }
 
     form {
       background: white;
       padding: 20px;
+      width: 100%;
       max-width: 400px;
-      margin: auto;
+      margin: 40px auto;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       border-radius: 8px;
     }
@@ -25,6 +28,7 @@
       margin-bottom: 12px;
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-size: 16px;
     }
 
     button {
@@ -35,47 +39,53 @@
       width: 100%;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 16px;
     }
 
     button:hover {
       background-color: #0056b3;
     }
 
-    .success {
-      color: green;
+    .success, .error, .loading {
       text-align: center;
       margin-top: 15px;
+      font-size: 15px;
     }
 
-    .error {
-      color: red;
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    .loading {
-      color: #ffa500;
-      text-align: center;
-      margin-top: 15px;
-    }
+    .success { color: green; }
+    .error { color: red; }
+    .loading { color: #ffa500; }
 
     /* Hide code field */
     input[name="code"] {
       display: none;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      form {
+        padding: 15px;
+      }
+
+      input, textarea, button {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
 
   <form id="data-form" method="POST">
-    <h2>Submit Your Info</h2>
+    <h2 style="text-align:center;">Submit Your Info</h2>
     <input type="text" name="name" placeholder="Name" required />
     <input type="email" name="email" placeholder="Email" required />
     <input type="tel" name="number" placeholder="Phone Number" required />
     <textarea name="address" placeholder="Address" required></textarea>
     <input type="number" name="age" placeholder="Age" required />
-   <input type="hidden" name="code" />
- <!-- This field is hidden by CSS -->
+    <input type="hidden" name="code" />
     <button type="submit">Submit</button>
     <div class="success" id="success-message" style="display:none;">Form submitted successfully!</div>
     <div class="error" id="error-message" style="display:none;">Something went wrong.</div>
@@ -83,7 +93,7 @@
   </form>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyuS6MprBBXSzV0bqwWKXj1AC3T-68dYBEUZvYvQtg37aiTnMuJYUDLZw8cvQeVLYOI/exec'; // Replace with your actual script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyuS6MprBBXSzV0bqwWKXj1AC3T-68dYBEUZvYvQtg37aiTnMuJYUDLZw8cvQeVLYOI/exec';
     const form = document.getElementById('data-form');
     const successMessage = document.getElementById('success-message');
     const errorMessage = document.getElementById('error-message');
@@ -91,7 +101,6 @@
     const submitButton = form.querySelector('button');
     const codeInput = form.querySelector('input[name="code"]');
 
-    // Generate a random 6-character alphanumeric code
     function generateRandomCode(length = 6) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let result = '';
@@ -103,11 +112,7 @@
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-
-      // Generate and assign the code before submission
       codeInput.value = generateRandomCode();
-
-      // Disable button to prevent multiple clicks
       submitButton.disabled = true;
       loadingMessage.style.display = 'block';
 
@@ -122,8 +127,6 @@
           successMessage.style.display = 'block';
           errorMessage.style.display = 'none';
           form.reset();
-
-          // Hide success message after 3 seconds
           setTimeout(() => {
             successMessage.style.display = 'none';
           }, 3000);
